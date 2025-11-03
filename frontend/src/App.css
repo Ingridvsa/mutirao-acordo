@@ -1,65 +1,116 @@
+/* === Reset global === */
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
+  font-family: "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   background: #f7f8fa;
+  color: #222;
 }
 
+/* === Container principal === */
 .app-container {
   display: flex;
   justify-content: center;
-  padding: 20px;
+  align-items: flex-start;
+  padding: 2rem;
+  min-height: 100vh;
 }
 
+/* === Painel principal === */
 .panel {
-  background: white;
-  border-radius: 12px;
-  width: 700px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+  padding: 2rem;
+  max-width: 720px;
+  width: 100%;
+  transition: box-shadow 0.3s ease;
 }
 
+.panel:hover {
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* === Cabeçalho === */
 .panel-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 2rem;
 }
 
 .panel-header h1 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #1a1a1a;
   margin: 0;
-  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.panel-header p {
+  font-size: 0.95rem;
+  color: #666;
+  margin-top: 0.25rem;
+}
+
+/* === Lista de respostas === */
+.list-container {
+  border-top: 1px solid #eee;
+  padding-top: 1rem;
 }
 
 .list-container h2 {
-  margin: 0 0 10px;
+  font-size: 1rem;
+  color: #444;
+  margin-bottom: 1rem;
 }
 
 .scrollable {
-  max-height: 60vh;
+  max-height: 400px;
   overflow-y: auto;
-  padding-right: 6px;
+  padding-right: 0.5rem;
 }
 
 .item {
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 10px;
-  margin-bottom: 8px;
-  background: #fafafa;
-  transition: background 0.3s;
+  background: #f9fafc;
+  border: 1px solid #e7e9ec;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.75rem;
+  transition: all 0.2s ease;
 }
 
 .item:hover {
-  background: #eef2ff;
+  background: #f0f4ff;
+  border-color: #cdd7ff;
 }
 
+.item strong {
+  color: #4a6cf7;
+  font-weight: 600;
+}
+
+.item small {
+  color: #666;
+  font-size: 0.85rem;
+}
+
+.timestamp {
+  font-size: 0.8rem;
+  color: #888;
+  margin-top: 0.25rem;
+}
+
+/* === Estado vazio === */
 .empty {
-  color: #777;
+  text-align: center;
   font-style: italic;
+  color: #777;
+  margin-top: 2rem;
 }
 
+/* === Círculo de progresso === */
 .circle-wrapper {
   position: relative;
   display: flex;
@@ -73,11 +124,26 @@ body {
 }
 
 .circle-percent {
-  font-size: 1.4rem;
-  font-weight: bold;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #4a6cf7;
 }
 
 .circle-sub {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   color: #666;
+}
+
+/* === Scrollbar estilizada === */
+.scrollable::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollable::-webkit-scrollbar-thumb {
+  background-color: #c5c9d1;
+  border-radius: 3px;
+}
+
+.scrollable::-webkit-scrollbar-thumb:hover {
+  background-color: #a8adb6;
 }

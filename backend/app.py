@@ -29,7 +29,10 @@ def webhook_form():
     data = load_data()
     data.append(payload)
     save_data(data)
-    socketio.emit("form_update", payload, broadcast=True)
+    socketio.emit("form_update", payload, namespace="/")  # ✅ sem broadcast=True
+    print("📩 Recebido formulário (dados brutos):", json.dumps(payload, indent=2, ensure_ascii=False))
+
+    print("Evento emitido via socket")
     return jsonify({"ok": True})
 
 @app.get("/api/entries")

@@ -1,26 +1,38 @@
 import { useEffect, useMemo, useState } from "react";
 import { io } from "socket.io-client";
 
-const BACKEND_URL = "http://localhost:5000";
+const BACKEND_URL = "https://unlowered-cohesively-eleanor.ngrok-free.dev";
 const TARGET = 100;
 
-const socket = io(BACKEND_URL, { transports: ["websocket"] });
+const socket = io(BACKEND_URL, {
+  transports: ["websocket", "polling"],
+  path: "/socket.io",
+  reconnectionAttempts: 10,
+  reconnectionDelay: 1000,
+});
+
+socket.on("connect", () => console.log("✅ Conectado ao backend:", socket.id));
+socket.on("connect_error", (err) => console.error("❌ Erro Socket.IO:", err.message));
+socket.on("disconnect", (reason) => console.warn("⚠️ Desconectado:", reason));
 
 export default function PanelRealtime() {
   const [items, setItems] = useState([]);
 
   useEffect(() => {
-    socket.on("form_update", (msg) => {
-      const nome = msg?.respostas?.["Nome"]?.[0] ?? "";
-      const numero = msg?.respostas?.["Número do processo"]?.[0] ?? "";
+    console.log("🎧 Escutando eventos 'form_update'...");
+    const handler = (msg) => {
+      console.log("📡 Recebido via socket:", msg);
+
+      // Pega os campos diretamente do payload
+      const nome = msg?.nome || "—";
+      const numero = msg?.numero_processo || "—";
       const timestamp = msg?.timestamp ?? new Date().toISOString();
 
-      if (nome || numero) {
-        setItems((prev) => [{ nome, numero, timestamp }, ...prev]);
-      }
-    });
+      setItems((prev) => [{ nome, numero, timestamp }, ...prev]);
+    };
 
-    return () => socket.off("form_update");
+    socket.on("form_update", handler);
+    return () => socket.off("form_update", handler);
   }, []);
 
   const percent = useMemo(() => {
@@ -30,17 +42,15 @@ export default function PanelRealtime() {
   return (
     <div className="panel">
       <header className="panel-header">
-        <div>
-          <h1>Coleta em tempo real</h1>
-          <p>
-            Meta: {TARGET} registros • Atual: {items.length}
-          </p>
+        <div className="title">
+          <h1>📊 Coleta em tempo real</h1>
+          <p>Meta: {TARGET} registros • Atual: {items.length}</p>
         </div>
         <CircleProgress percent={percent} />
       </header>
 
       <section className="list-container">
-        <h2>Últimas respostas</h2>
+        <h2>📥 Últimas respostas recebidas</h2>
         <div className="scrollable">
           {items.length === 0 ? (
             <p className="empty">Nenhuma resposta ainda…</p>
@@ -48,11 +58,13 @@ export default function PanelRealtime() {
             items.map((it, i) => (
               <div key={i} className="item">
                 <div>
-                  <strong>#{items.length - i}</strong> —{" "}
-                  <span>{it.nome}</span>
+                  <strong>#{items.length - i}</strong> — {it.nome}
                 </div>
                 <div>
                   <small>Nº Processo:</small> {it.numero}
+                </div>
+                <div>
+                  <small>⏰ {new Date(it.timestamp).toLocaleString()}</small>
                 </div>
               </div>
             ))
