@@ -1,10 +1,13 @@
-# app.py
+import eventlet
+eventlet.monkey_patch()
 import os, json
 from flask import Flask, request, jsonify
 from flask_socketio import SocketIO
 
 app = Flask(__name__)
-socketio = SocketIO(app, cors_allowed_origins=os.getenv("CORS_ORIGINS", "*"))
+socketio = SocketIO(app, async_mode="eventlet",
+                    cors_allowed_origins=os.getenv("CORS_ORIGINS", "*"))
+
 
 DATA_FILE = os.getenv("DATA_FILE", "data.json")
 
