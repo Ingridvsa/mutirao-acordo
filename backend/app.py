@@ -18,7 +18,7 @@ ALLOW_ANY = ("*" in ALLOWED_ORIGINS) or (not ALLOWED_ORIGINS)
 
 # Vars de ambiente
 FRONTEND_ORIGIN = os.getenv("FRONTEND_ORIGIN", "http://localhost:5173")
-DATA_FILE = os.getenv("DATA_FILE", "/var/data/data.json")
+DATA_FILE = os.getenv("DATA_FILE", "/tmp/data.json")
 SHEET_CSV_URL = os.getenv("SHEET_CSV_URL", "").strip()
 
 # App
