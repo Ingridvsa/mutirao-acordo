@@ -1,8 +1,7 @@
-flask==3.0
-flask-socketio==5.3
-python-socketio==5.11
-python-engineio==4.9
-eventlet==0.36
-gunicorn==23.0
-python-dotenv
-requests
+Flask>=2.3
+flask-socketio>=5.3
+eventlet>=0.36
+gunicorn>=21.2
+flask-cors>=4.0
+python-dotenv>=1.0
+requests>=2.31
