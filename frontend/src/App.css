@@ -1,30 +1,38 @@
-/* === Reset global === */
 body {
   margin: 0;
-  font-family: "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  background: #f7f8fa;
-  color: #222;
+  font-family: "Poppins", sans-serif;
+  background: linear-gradient(180deg, #f9f9f9 0%, #f3f3f3 100%);
+  color: #333;
+  display: block;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 40px;
+  overflow-x: hidden;
 }
 
-/* === Container principal === */
 .app-container {
+  width: 100%;
+  max-width: none;
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding: 2rem;
+  padding: 0 20px;
   min-height: 100vh;
 }
 
-/* === Painel principal === */
 .panel {
-  background: #fff;
+  min-height: 450px;
+  background: #f37021;
   border-radius: 16px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
-  padding: 2rem;
-  max-width: 720px;
+  padding: 2.5rem 3rem;
   width: 100%;
+  max-width: 900px;
+  margin: 1px auto 40px; /* 👈 diminui o espaço acima */
   transition: box-shadow 0.3s ease;
 }
+
 
 .panel:hover {
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
@@ -39,9 +47,9 @@ body {
 }
 
 .panel-header h1 {
-  font-size: 1.4rem;
+  font-size: 2rem;
   font-weight: 600;
-  color: #1a1a1a;
+  color: #ffffff;
   margin: 0;
   display: flex;
   align-items: center;
@@ -49,8 +57,8 @@ body {
 }
 
 .panel-header p {
-  font-size: 0.95rem;
-  color: #666;
+  font-size: 1.2rem;
+  color: #f3e7e7;;
   margin-top: 0.25rem;
 }
 
@@ -61,8 +69,9 @@ body {
 }
 
 .list-container h2 {
-  font-size: 1rem;
-  color: #444;
+  font-size: 1.2rem;
+  text-align: center;
+  color: #ffffff;;
   margin-bottom: 1rem;
 }
 
@@ -79,6 +88,7 @@ body {
   padding: 0.75rem 1rem;
   margin-bottom: 0.75rem;
   transition: all 0.2s ease;
+  text-align: center;
 }
 
 .item:hover {
@@ -87,7 +97,7 @@ body {
 }
 
 .item strong {
-  color: #4a6cf7;
+  color: #ffa600;
   font-weight: 600;
 }
 
@@ -124,14 +134,14 @@ body {
 }
 
 .circle-percent {
-  font-size: 1.1rem;
+  font-size: 2rem;
   font-weight: 600;
-  color: #4a6cf7;
+  color: #ffffff;;
 }
 
 .circle-sub {
-  font-size: 0.8rem;
-  color: #666;
+  font-size: 1rem;
+  color: #ffffff;
 }
 
 /* === Scrollbar estilizada === */
@@ -146,4 +156,90 @@ body {
 
 .scrollable::-webkit-scrollbar-thumb:hover {
   background-color: #a8adb6;
+}
+
+.gol-container {
+  /* largura fluida e centralizada */
+  width: 100%;
+  max-width: 1100px;      /* ajuste aqui o limite que quiser: 900, 1000, 1200… */
+  margin: 32px auto;
+
+  /* visual mantém o mesmo */
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  padding: 30px 48px;     /* um pouco mais de padding nas laterais */
+  animation: fadeIn 0.8s ease;
+}
+
+
+.gol-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: #f37021;
+  margin-bottom: 20px;
+}
+
+.gol-panel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+  margin-bottom: 30px;
+}
+
+.meta p {
+  margin: 6px 0;
+  font-size: 16px;
+  color: #444;
+}
+
+.gol-circle {
+  position: relative;
+}
+
+.gol-percent {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-weight: 600;
+  color: #f37021;
+}
+
+.gol-percent .sub {
+  font-size: 12px;
+  color: #666;
+}
+
+.gol-lista {
+  text-align: left;
+}
+
+.scrollable {
+  max-height: 320px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.gol-item {
+  background: #fff7f3;
+  border-left: 4px solid #f37021;
+  padding: 10px 15px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  transition: background 0.3s ease;
+}
+
+.gol-item:hover {
+  background: #ffeadd;
+}
+
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
