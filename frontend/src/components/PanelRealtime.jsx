@@ -84,21 +84,6 @@ export default function PanelRealtime() {
 
         <div className="actions" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
           <CircleProgress percent={percent} />
-          <button
-         //   onClick={handleReset}
-            //style={{
-              //marginTop: 12,
-              //background: "#c0392b",
-              //color: "#fff",
-              //border: "none",
-              //padding: "8px 12px",
-              //borderRadius: 8,
-              //cursor: "pointer",
-              //fontWeight: "bold",
-            //}}
-          >
-            Zerar Painel
-          </button>
         </div>
       </header>
 
