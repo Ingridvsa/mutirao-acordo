@@ -1,47 +1,75 @@
 import eventlet
 eventlet.monkey_patch()
 
-import os, json, re, csv, io
+import os, json, re, csv, io, traceback
 from datetime import datetime
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, make_response
 from flask_socketio import SocketIO
 from dotenv import load_dotenv
 from flask_cors import CORS
 import requests
-import traceback
 
 load_dotenv()
 
-# Variáveis de ambiente (produção: defina no Render)
+# ---------- ORIGINS / CORS ----------
+RAW_ORIGINS = os.getenv("CORS_ORIGINS") or os.getenv("FRONTEND_ORIGIN", "")
+ALLOWED_ORIGINS = [o.strip() for o in RAW_ORIGINS.split(",") if o.strip()]
+ALLOW_ANY = ("*" in ALLOWED_ORIGINS) or (not ALLOWED_ORIGINS)
+
+# Vars de ambiente
 FRONTEND_ORIGIN = os.getenv("FRONTEND_ORIGIN", "http://localhost:5173")
-DATA_FILE = os.getenv("DATA_FILE", "/var/data/data.json")  # disco persistente no Render
-CORS_ORIGINS = os.getenv("CORS_ORIGINS", "*")
+DATA_FILE = os.getenv("DATA_FILE", "/var/data/data.json")
 SHEET_CSV_URL = os.getenv("SHEET_CSV_URL", "").strip()
 
-# Cria app UMA vez só
+# App
 app = Flask(__name__)
 
-# CORS (libera o frontend e webhooks)
+# Flask-CORS
 CORS(app, resources={
-    r"/api/*": {"origins": [FRONTEND_ORIGIN, "http://127.0.0.1:5173"]},
+    r"/api/*":     {"origins": ALLOWED_ORIGINS if not ALLOW_ANY else "*"},
     r"/webhook/*": {"origins": "*"},
 })
 
-# (opcional, reforça CORS e preflight)
+# Socket.IO
+socketio = SocketIO(
+    app,
+    async_mode="eventlet",
+    cors_allowed_origins="*" if ALLOW_ANY else ALLOWED_ORIGINS
+)
+
+# Preflight (OPTIONS)
+@app.before_request
+def handle_preflight():
+    if request.method == "OPTIONS":
+        resp = make_response("", 204)
+        origin = request.headers.get("Origin")
+        if ALLOW_ANY or (origin and origin in ALLOWED_ORIGINS):
+            resp.headers["Access-Control-Allow-Origin"] = origin if not ALLOW_ANY else "*"
+            resp.headers["Vary"] = "Origin"
+        req_headers = request.headers.get("Access-Control-Request-Headers", "Content-Type, Authorization")
+        resp.headers["Access-Control-Allow-Headers"] = req_headers
+        resp.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+        return resp
+    return None
+
+# Headers CORS em todas as respostas
 @app.after_request
 def add_cors_headers(resp):
-    origin = request.headers.get("Origin", "")
-    if origin in (FRONTEND_ORIGIN, "http://127.0.0.1:5173"):
+    origin = request.headers.get("Origin")
+    if ALLOW_ANY:
+        if origin:
+            resp.headers["Access-Control-Allow-Origin"] = origin
+            resp.headers["Vary"] = "Origin"
+        else:
+            resp.headers["Access-Control-Allow-Origin"] = "*"
+    elif origin in ALLOWED_ORIGINS:
         resp.headers["Access-Control-Allow-Origin"] = origin
         resp.headers["Vary"] = "Origin"
     resp.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
     resp.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
     return resp
 
-# Socket.IO com eventlet (necessário para Render)
-socketio = SocketIO(app, async_mode="eventlet", cors_allowed_origins=CORS_ORIGINS)
-
-# aliases configuráveis (p/ sheet)
+# ---------- Helpers de storage ----------
 NOME_KEYS   = [s.strip() for s in os.getenv("SHEET_NOME_KEYS", "nome,Nome,NOME,Nome:").split(",")]
 NUMERO_KEYS = [s.strip() for s in os.getenv("SHEET_NUMERO_KEYS", "numero,numero_processo,número_processo,processo,Número do processo,Nº Processo").split(",")]
 TS_KEYS     = [s.strip() for s in os.getenv("SHEET_TIMESTAMP_KEYS", "timestamp,Timestamp,Carimbo de data/hora,Data/hora,Data,Submitted At,Submission Time").split(",")]
@@ -52,9 +80,8 @@ def load_data():
         with open(DATA_FILE, "r", encoding="utf-8") as f:
             return json.load(f)
     except (FileNotFoundError, json.JSONDecodeError):
-        # começa “limpo” se o arquivo não existir ou estiver quebrado
         return []
-    
+
 def save_data(data):
     os.makedirs(os.path.dirname(DATA_FILE) or ".", exist_ok=True)
     with open(DATA_FILE, "w", encoding="utf-8") as f:
@@ -163,8 +190,7 @@ def dedupe(items):
             out.append({**it, "_id": _id})
     return out
 
-import traceback
-
+# ---------- Rotas ----------
 @app.post("/webhook/form")
 def webhook_form():
     try:
@@ -185,9 +211,19 @@ def webhook_form():
         print("ERRO /webhook/form:", e, "\n", tb)
         return jsonify({"ok": False, "error": str(e)}), 500
 
-@app.get("/api/entries")
+@app.route("/api/entries", methods=["GET", "OPTIONS"])
 def get_entries():
+    if request.method == "OPTIONS":
+        return "", 204
     return jsonify(load_data())
+
+@app.route("/api/reset", methods=["POST", "OPTIONS"])
+def reset_data():
+    if request.method == "OPTIONS":
+        return "", 204
+    save_data([])
+    socketio.emit("form_update", {"reset": True}, namespace="/")
+    return jsonify({"ok": True})
 
 @app.post("/api/backfill_csv")
 def backfill_csv():
@@ -205,25 +241,21 @@ def backfill_csv():
         merged = dedupe(mapped + current)
         save_data(merged)
 
-        # opcional: emitir p/ telas abertas
         for it in mapped:
             socketio.emit("form_update", it, namespace="/")
 
-        return jsonify({"ok": True, "rows_from_csv": len(rows), "added_total": len(merged) - len(current), "total_now": len(merged)})
+        return jsonify({
+            "ok": True,
+            "rows_from_csv": len(rows),
+            "added_total": len(merged) - len(current),
+            "total_now": len(merged)
+        })
     except Exception as e:
         return jsonify({"ok": False, "error": str(e)}), 400
 
 @app.get("/healthz")
 def healthz():
     return "ok", 200
-
-@app.route("/api/reset", methods=["POST", "OPTIONS"])
-def reset_data():
-    if request.method == "OPTIONS":
-        return ("", 204)
-    save_data([])
-    socketio.emit("form_update", {"reset": True}, namespace="/")
-    return jsonify({"ok": True})
 
 if __name__ == "__main__":
     print(">> dev http://127.0.0.1:5000")
