@@ -8,6 +8,7 @@ from flask_socketio import SocketIO
 from dotenv import load_dotenv
 from flask_cors import CORS
 import requests
+import traceback
 
 load_dotenv()
 
@@ -50,9 +51,10 @@ def load_data():
     try:
         with open(DATA_FILE, "r", encoding="utf-8") as f:
             return json.load(f)
-    except FileNotFoundError:
+    except (FileNotFoundError, json.JSONDecodeError):
+        # começa “limpo” se o arquivo não existir ou estiver quebrado
         return []
-
+    
 def save_data(data):
     os.makedirs(os.path.dirname(DATA_FILE) or ".", exist_ok=True)
     with open(DATA_FILE, "w", encoding="utf-8") as f:
@@ -161,23 +163,27 @@ def dedupe(items):
             out.append({**it, "_id": _id})
     return out
 
+import traceback
+
 @app.post("/webhook/form")
 def webhook_form():
-    payload = request.get_json(force=True, silent=True) or {}
     try:
+        payload = request.get_json(force=True, silent=True) or {}
         print("Payload bruto:", json.dumps(payload, ensure_ascii=False)[:800])
-    except Exception:
-        pass
 
-    norm = normalize_row(payload)
-    data = load_data()
-    data.append(norm)
-    data = dedupe(data)
-    save_data(data)
+        norm = normalize_row(payload)
+        data = load_data()
+        data.append(norm)
+        data = dedupe(data)
+        save_data(data)
 
-    socketio.emit("form_update", norm, namespace="/")
-    print("Recebido formulário (normalizado):", json.dumps(norm, indent=2, ensure_ascii=False))
-    return jsonify({"ok": True})
+        socketio.emit("form_update", norm, namespace="/")
+        print("OK (normalizado):", json.dumps(norm, ensure_ascii=False))
+        return jsonify({"ok": True})
+    except Exception as e:
+        tb = traceback.format_exc()
+        print("ERRO /webhook/form:", e, "\n", tb)
+        return jsonify({"ok": False, "error": str(e)}), 500
 
 @app.get("/api/entries")
 def get_entries():
