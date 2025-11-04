@@ -11,15 +11,33 @@ import requests
 
 load_dotenv()
 
+# Variáveis de ambiente (produção: defina no Render)
+FRONTEND_ORIGIN = os.getenv("FRONTEND_ORIGIN", "http://localhost:5173")
+DATA_FILE = os.getenv("DATA_FILE", "/var/data/data.json")  # disco persistente no Render
+CORS_ORIGINS = os.getenv("CORS_ORIGINS", "*")
+
+# Cria app UMA vez só
 app = Flask(__name__)
 
+# CORS (libera o frontend e webhooks)
 CORS(app, resources={
-    r"/api/*": {"origins": ["http://localhost:5173", "http://127.0.0.1:5173"]},
+    r"/api/*": {"origins": [FRONTEND_ORIGIN, "http://127.0.0.1:5173"]},
     r"/webhook/*": {"origins": "*"},
 })
 
-socketio = SocketIO(app, async_mode="eventlet",
-                    cors_allowed_origins=os.getenv("CORS_ORIGINS", "*"))
+# (opcional, reforça CORS e preflight)
+@app.after_request
+def add_cors_headers(resp):
+    origin = request.headers.get("Origin", "")
+    if origin in (FRONTEND_ORIGIN, "http://127.0.0.1:5173"):
+        resp.headers["Access-Control-Allow-Origin"] = origin
+        resp.headers["Vary"] = "Origin"
+    resp.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+    resp.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    return resp
+
+# Socket.IO com eventlet (necessário para Render)
+socketio = SocketIO(app, async_mode="eventlet", cors_allowed_origins=CORS_ORIGINS)
 
 DATA_FILE = os.getenv("DATA_FILE", "data.json")
 SHEET_CSV_URL = os.getenv("SHEET_CSV_URL", "").strip()

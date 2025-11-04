@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { io } from "socket.io-client";
 
-const BACKEND_URL = "https://unlowered-cohesively-eleanor.ngrok-free.dev";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 const TARGET = 100;
 const STORAGE_KEY = "gol-monitor-acordos:v1";
 
