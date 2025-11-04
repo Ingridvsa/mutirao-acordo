@@ -15,6 +15,7 @@ load_dotenv()
 FRONTEND_ORIGIN = os.getenv("FRONTEND_ORIGIN", "http://localhost:5173")
 DATA_FILE = os.getenv("DATA_FILE", "/var/data/data.json")  # disco persistente no Render
 CORS_ORIGINS = os.getenv("CORS_ORIGINS", "*")
+SHEET_CSV_URL = os.getenv("SHEET_CSV_URL", "").strip()
 
 # Cria app UMA vez só
 app = Flask(__name__)
@@ -38,9 +39,6 @@ def add_cors_headers(resp):
 
 # Socket.IO com eventlet (necessário para Render)
 socketio = SocketIO(app, async_mode="eventlet", cors_allowed_origins=CORS_ORIGINS)
-
-DATA_FILE = os.getenv("DATA_FILE", "data.json")
-SHEET_CSV_URL = os.getenv("SHEET_CSV_URL", "").strip()
 
 # aliases configuráveis (p/ sheet)
 NOME_KEYS   = [s.strip() for s in os.getenv("SHEET_NOME_KEYS", "nome,Nome,NOME,Nome:").split(",")]
