@@ -18,7 +18,7 @@ ALLOW_ANY = ("*" in ALLOWED_ORIGINS) or (not ALLOWED_ORIGINS)
 
 # Vars de ambiente
 FRONTEND_ORIGIN = os.getenv("FRONTEND_ORIGIN", "http://localhost:5173")
-DATA_FILE = os.getenv("DATA_FILE", "/tmp/data.json")
+DATA_FILE = os.getenv("DATA_FILE")
 SHEET_CSV_URL = os.getenv("SHEET_CSV_URL", "").strip()
 
 # App
@@ -83,7 +83,7 @@ def load_data():
         return []
 
 def save_data(data):
-    os.makedirs(os.path.dirname(DATA_FILE) or ".", exist_ok=True)
+    os.makedirs(os.path.dirname(DATA_FILE), exist_ok=True)
     with open(DATA_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
