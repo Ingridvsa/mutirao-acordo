@@ -190,6 +190,23 @@ def dedupe(items):
             out.append({**it, "_id": _id})
     return out
 
+#app.get('/json/get')
+@app.get("/json/get")
+def get_json_file():
+    try:
+        if not os.path.exists(DATA_FILE):
+            return jsonify({"ok": False, "error": "Arquivo de dados não encontrado"}), 404
+
+        with open(DATA_FILE, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        return jsonify({"ok": True, "data": data})
+    except Exception as e:
+        tb = traceback.format_exc()
+        print("ERRO /json/get:", e, "\n", tb)
+        return jsonify({"ok": False, "error": str(e)}), 500
+
+
 # ---------- Rotas ----------
 @app.post("/webhook/form")
 def webhook_form():
