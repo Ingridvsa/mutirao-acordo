@@ -1,0 +1,28 @@
+[33md809a8d[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m Merge: conflitcs
+[33md46a436[m Merge pull request #1 from Ingridvsa/correction
+[33m121c3dc[m[33m ([m[1;31morigin/correction[m[33m, [m[1;32mcorrection[m[33m)[m feat: correcao
+[33m40ec976[m[33m ([m[1;32mlocal[m[33m)[m feat: alterações feitas na branch local9
+[33m191822c[m feat: alterações feitas na branch local9
+[33m499e6d8[m feat: alterações feitas na branch local8
+[33m8bac120[m feat: alterações feitas na branch local7
+[33m9b2eb8d[m feat: alterações feitas na branch local6
+[33mfdbdc0c[m feat: alterações feitas na branch local5
+[33me698fe0[m feat: alterações feitas na branch local4
+[33ma777ea5[m feat: alterações feitas na branch local3
+[33m4120e63[m feat: alterações feitas na branch local2
+[33m5d0752f[m feat: alterações feitas na branch local
+[33m80096e6[m[33m ([m[1;31morigin/local[m[33m)[m Versão  II: melhora do armazenamento dos dados e interface
+[33m707108b[m Salvando alterações locais antes de trocar de branch
+[33m9ef90ee[m add render.yaml para deploy completo backend + frontend
+[33me0d0793[m fix: adicionar import do CORS
+[33mba183a6[m fix: remover eventlet e usar threading no socketio
+[33me661c3e[m fix: usar Python 3.11 no Render
+[33mab31a49[m fix: runtime na raiz e corrigido eventlet
+[33m587d4a8[m fix: corrigida versão do eventlet e runtime do Python
+[33m44e1c25[m ajuste para deploy
+[33m5344016[m ajuste para deploy
+[33m1ea8cdd[m projeto pra produção
+[33m32d7603[m projeto funcional
+[33mcbe3af5[m commit
+[33m89a04ad[m Adiciona .gitignore
+[33m7ee3386[m Primeiro commit - Projeto Mutirão Acordo
