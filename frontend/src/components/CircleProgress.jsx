@@ -10,9 +10,10 @@ export default function CircleProgress({ percent, size = 190, target = 100 }) {
     if (percent > lastPercent) {
       
       try {
-        const audio = new Audio("/sounds/airplane-ofc.mp3");
+        const audio = new Audio("/sounds/airplane.mp3");
         audio.volume = 0.6;
         audio.onplay = () => setShowPlane(true);
+        audio.onended = () => setShowPlane(false);
         audio.play().catch(() =>
           console.warn("Som bloqueado até interação do usuário (clique na página).")
         );
