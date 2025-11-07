@@ -4,26 +4,37 @@ export default function CircleProgress({ percent, size = 190, target = 100 }) {
   const [animatedPercent, setAnimatedPercent] = useState(0);
   const [lastPercent, setLastPercent] = useState(0);
   const [showPlane, setShowPlane] = useState(false);
-
+  const [animationDuration, setAnimationDuration] = useState(6000); // padrão de 6s
 
   useEffect(() => {
     if (percent > lastPercent) {
-      
       try {
         const audio = new Audio("/sounds/airplane.mp3");
         audio.volume = 0.6;
+
+        // Quando o áudio carrega, ajusta a duração da animação
+        audio.onloadedmetadata = () => {
+          const dur = (audio.duration || 6) * 1000;
+          setAnimationDuration(dur);
+        };
+
+        // Quando começar a tocar → mostra o avião
         audio.onplay = () => setShowPlane(true);
+
+        // Quando o som acabar → esconde o avião
         audio.onended = () => setShowPlane(false);
-        audio.play().catch(() =>
-          console.warn("Som bloqueado até interação do usuário (clique na página).")
-        );
+
+        audio
+          .play()
+          .then(() => console.log("✈️ Som tocando e avião animando!"))
+          .catch(() => {
+            console.warn(
+              "Som bloqueado até interação do usuário (clique na página)."
+            );
+          });
       } catch (err) {
         console.warn("Erro ao tocar som:", err);
       }
-
-      // ✈️ Mostra avião durante a animação
-      setShowPlane(true);
-      setTimeout(() => setShowPlane(false), 6000);
     }
 
     setLastPercent(percent);
@@ -101,12 +112,17 @@ export default function CircleProgress({ percent, size = 190, target = 100 }) {
         <div style={{ fontSize: size * 0.11 }}>de {target}</div>
       </div>
 
-    {/* ✈️ Avião animado */}
-    {showPlane && (
-        <div className="plane-emoji takeoff">
-            ✈️
+      {/* ✈️ Avião animado */}
+      {showPlane && (
+        <div
+          className="plane-emoji"
+          style={{
+            animation: `flyAcross ${animationDuration}ms ease-in-out forwards`,
+          }}
+        >
+          ✈️
         </div>
-    )}
+      )}
     </div>
   );
 }
