@@ -5,9 +5,10 @@ export default function CircleProgress({ percent, size = 190, target = 100 }) {
   const [lastPercent, setLastPercent] = useState(0);
   const [showPlane, setShowPlane] = useState(false);
 
+
   useEffect(() => {
     if (percent > lastPercent) {
-      // 🔊 Som do avião
+      
       try {
         const audio = new Audio("/sounds/airplane.mp3");
         audio.volume = 0.6;
