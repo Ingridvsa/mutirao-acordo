@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { io } from "socket.io-client";
+import CircleProgress from "./CircleProgress";
+import "../App.css";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 const TARGET = 100;
@@ -110,7 +112,6 @@ export default function PanelRealtime() {
   );
 }
 
-
 function useLocalStorageState(key, initialValue) {
   const read = () => {
     try {
@@ -189,50 +190,4 @@ function makeId(it) {
   const num = (it.numero || "—").trim();
   const ts = new Date(it.timestamp ?? Date.now()).toISOString();
   return `${num}|${ts}`;
-}
-
-function CircleProgress({ percent, size = 190 }) {
-  const stroke = 14;
-  const radius = (size - stroke) / 2;
-  const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (percent / 100) * circumference;
-
-  return (
-    <div className="circle-wrapper" style={{ position: "relative", width: size, height: size }}>
-      <svg width={size} height={size}>
-        <circle cx={size / 2} cy={size / 2} r={radius} stroke="#ddd" strokeWidth={stroke} fill="none" />
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          stroke="#f37021"
-          strokeWidth={stroke}
-          fill="none"
-          strokeDasharray={circumference}
-          strokeDashoffset={offset}
-          strokeLinecap="round"
-          style={{ transition: "stroke-dashoffset 0.5s ease" }}
-        />
-      </svg>
-
-      {/* Overlay centralizado */}
-      <div
-        className="circle-label"
-        style={{
-          position: "absolute",
-          inset: 0,
-          display: "grid",
-          placeItems: "center",
-          textAlign: "center",
-          lineHeight: 1.1,
-          color: "#fff",
-        }}
-      >
-        <div>
-          <div style={{ fontSize: size * 0.24, fontWeight: 700 }}>{percent}%</div>
-          <div style={{ fontSize: size * 0.11 }}>de {TARGET}</div>
-        </div>
-      </div>
-    </div>
-  );
 }
