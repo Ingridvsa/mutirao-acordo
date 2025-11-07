@@ -9,7 +9,7 @@ export default function CircleProgress({ percent, size = 190, target = 100 }) {
   useEffect(() => {
     if (percent > lastPercent) {
       try {
-        const audio = new Audio("/sounds/airplane.mp3");
+        const audio = new Audio("/sounds/airplane1.mp3");
         audio.volume = 0.6;
 
         // Quando o áudio carrega, ajusta a duração da animação
