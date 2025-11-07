@@ -99,17 +99,12 @@ export default function CircleProgress({ percent, size = 190, target = 100 }) {
         <div style={{ fontSize: size * 0.11 }}>de {target}</div>
       </div>
 
-      {/* ✈️ Avião animado */}
-      {showPlane && (
-        <div
-          className="plane-emoji"
-          style={{
-            animation: "takeoffToCircle 6s ease-out forwards",
-          }}
-        >
-          ✈️
+    {/* ✈️ Avião animado */}
+    {showPlane && (
+        <div className="plane-emoji takeoff">
+            ✈️
         </div>
-      )}
+    )}
     </div>
   );
 }
