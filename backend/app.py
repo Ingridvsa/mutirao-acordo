@@ -211,7 +211,13 @@ def get_json_file():
 @app.post("/webhook/form")
 def webhook_form():
     try:
-        payload = request.get_json(force=True, silent=True) or {}
+        # 👇 Primeiro tenta JSON
+        payload = request.get_json(silent=True)
+
+        # Se não for JSON, pega os dados do form normal (POST do HTML)
+        if not payload:
+            payload = request.form.to_dict(flat=True)
+
         print("Payload bruto:", json.dumps(payload, ensure_ascii=False)[:800])
 
         norm = normalize_row(payload)
@@ -227,6 +233,7 @@ def webhook_form():
         tb = traceback.format_exc()
         print("ERRO /webhook/form:", e, "\n", tb)
         return jsonify({"ok": False, "error": str(e)}), 500
+
 
 @app.route("/api/entries", methods=["GET", "OPTIONS"])
 def get_entries():

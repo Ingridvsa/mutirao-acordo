@@ -1,10 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { io } from "socket.io-client";
-import CircleProgress from "./CircleProgress";
+// import CircleProgress from "./CircleProgress"; // ❌ não precisamos mais
 import "../App.css";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
-const TARGET = 100;
 const STORAGE_KEY = "gol-monitor-acordos:v1";
 
 const socket = io(BACKEND_URL, {
@@ -51,9 +50,10 @@ export default function PanelRealtime() {
     return () => socket.off("form_update", handler);
   }, [setItems]);
 
-  const percent = useMemo(() => {
-    return Math.min(100, Math.round((items.length / TARGET) * 100));
-  }, [items.length]);
+  // ❌ não precisamos mais da porcentagem nem do círculo
+  // const percent = useMemo(() => {
+  //   return Math.min(100, Math.round((items.length / TARGET) * 100));
+  // }, [items.length]);
 
   // zerar dados
   const handleReset = async () => {
@@ -75,18 +75,21 @@ export default function PanelRealtime() {
 
   return (
     <div className="panel">
-      <header className="panel-header" style={{ display: "flex", gap: 16, alignItems: "center" }}>
+      <header
+        className="panel-header"
+        style={{ display: "flex", gap: 16, alignItems: "center", justifyContent: "space-between" }}
+      >
         <div className="title">
-          <h1>🧳 Monitor de Acordos - GOL</h1>
+          {/* ✅ novo título */}
+          <h1>🧳 Acordos GOL</h1>
+          {/* ✅ subtópico com quantidade */}
           <p>
-            <strong>Meta:</strong> {TARGET} Acordos <br />
-            <strong>Atual:</strong> {items.length} Acordos
+            <strong>Quantidade acordos fechados:</strong> {items.length}
           </p>
         </div>
 
-        <div className="actions" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <CircleProgress percent={percent} />
-        </div>
+        {/* Se ainda quiser o botão de reset, pode ficar aqui, por exemplo */}
+        {/* <button onClick={handleReset}>Zerar painel</button> */}
       </header>
 
       <section className="list-container">
@@ -98,8 +101,14 @@ export default function PanelRealtime() {
             items.map((it, i) => (
               <div key={makeId(it)} className="item">
                 <div>
+                  {/* Pode manter a numeração do acordo, se quiser */}
                   <strong>{`${items.length - i}º acordo`}</strong>
                 </div>
+                {/* ✅ nome + número do processo */}
+                <div>
+                  <span>{it.nome} — {it.numero}</span>
+                </div>
+                {/* ✅ data e hora */}
                 <div>
                   <small>{new Date(it.timestamp).toLocaleString()}</small>
                 </div>
